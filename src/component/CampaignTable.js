@@ -1,7 +1,7 @@
 import React, {Fragment} from 'react';
 import styled from 'styled-components';
 import sortBy from 'lodash.sortby';
-
+import { format, parse, parseISO, getTime } from 'date-fns';
 
 const TableHeader = styled.div`
 	display: flex;
@@ -48,33 +48,47 @@ const Data = styled.div`
 	}
 `;
 
+const StatusRow = styled.div`
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+`;
+
+const Dot = styled.div`
+	width: 10px;
+	height: 10px;
+	margin-right: 10px;
+	/* background-color: #dc3d3d; */
+	border-radius: 10px;
+`;
+
+const StatusText = styled.div`
+	color: #444;
+`;
 class CampaignTable extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 				dataArr : this.props.data,
 				SortData: [],
+				status: '',
 		}
 		this.sortName = this.sortName.bind(this);
 		this.sortStartDate = this.sortStartDate.bind(this);
 
 	}
 	sortName() {
-		console.log("click sort");
+		// console.log("click sort");
 		this.setState(prevState => {
 			return(
 				{dataArr: sortBy(prevState.dataArr, ['name'])}
 			)
 		},() => console.log('sorted data', this.state.dataArr))
 	}
+
 	sortStartDate() {
-		console.log("click sort");
+		// console.log("click sort");
 		let tempArr = this.props.data;
-		// this.setState(prevState => {
-		// 	return(
-		// 		{dataArr: sortBy(prevState.dataArr, ['startDate'])}
-		// 	)
-		// },() => console.log('sorted data', this.state.dataArr))
 		tempArr.sort(function compare(a, b) {
 			var dateA = new Date(a.startDate);
 			var dateB = new Date(b.startDate);
@@ -83,18 +97,18 @@ class CampaignTable extends React.Component {
 		this.setState({
 			dataArr: tempArr,
 		})
-		console.log("sorted start date",tempArr);
+		// console.log("sorted start date",tempArr);
 	}
 
 	static getDerivedStateFromProps(props, state) {
 		if(props.name.length > 0) {
-			console.log("enter in new method");
+			// console.log("enter in new method");
 			let data = state.dataArr;
 			let filterName =[];
 			data.map(data => {
-				console.log("hello");
+				// console.log("hello");
 				if(data.name == props.name) {
-					console.log("success");
+					// console.log("success");
 					filterName.push(data)
 				}
 			})
@@ -107,31 +121,70 @@ class CampaignTable extends React.Component {
 				alert("Sorry No Campaign found");
 			}
 		}
+		if(props.startRange > 0){
+			if(props.endRange > 0) {
+				if(props.endRange < props.startRange){
+					alert('End Date cannot be before Start Date');
+					return null;
+				}
+				let data = state.dataArr;
+				let DateRange =[];
+				data.map(data => {
+					let startDate = getTime(parse(data.startDate,'MM/dd/yyyy', new Date()))
+					let endDate = getTime(parse(data.endDate,'MM/dd/yyyy', new Date()))
+					console.log("hello")
+					if( startDate > props.startRange && endDate < props.endRange) {
+						console.log('within range');
+						DateRange.push(data)
+					}
+				})
+				if(DateRange.length > 0){
+					return{
+						dataArr: DateRange,
+					}
+				}
+			}
+		}
 		return null;
+	}
+	CampaignStatus() {
+
 	}
 	render() {
 		const Arr = this.props.data;
 		console.log(this.state.dataArr);
 		console.log("data in campaign table:", this.props.startDate, this.props.endDate);
 		console.log("search name", this.props.name);
-		
+		console.log("range",this.props.startRange)
 		return(
 			<Fragment>
-				<div onClick={this.sortName}>sort</div>
-				<div onClick={this.sortStartDate}>start date</div>
+				<div onClick={this.sortName}>sort by name</div>
+				<div onClick={this.sortStartDate}>sort by start date</div>
 				<TableHeader>
 					<Title> Name </Title>
 					<Title> Start Date </Title>
 					<Title> End Date </Title>
+					<Title> Active </Title>
 					<Title> Budget </Title>
 				</TableHeader>
 				{
 					this.state.dataArr.map(data => {
+						let currentDate = getTime(new Date());
+						let endDate = getTime(parse(data.endDate,'MM/dd/yyyy', new Date()))
+						if(currentDate < endDate) {
+							console.log("false");
+						}
 						return(
 							<Description key={data.id}>
 								<Data>{data.name}</Data>
 								<Data>{data.startDate}</Data>
 								<Data>{data.endDate}</Data>
+								<Data>
+									<StatusRow>
+										<Dot style={{backgroundColor : currentDate < endDate ? "#14a214" : "#9e1616"}}/>
+										<StatusText>{currentDate < endDate ? "active" : "Inactive" }</StatusText>
+									</StatusRow>
+								</Data>
 								<Data>{data.Budget}</Data>
 							</Description>
 						)

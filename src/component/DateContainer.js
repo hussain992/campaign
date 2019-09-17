@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { format, parse, parseISO } from 'date-fns'
+import { format, parse, parseISO, getTime } from 'date-fns';
 
 const DateInputRow = styled.div`
   display: flex;
@@ -54,20 +54,17 @@ class DateContainer extends React.Component {
   }
   
   handleStartDateChange = date => {
-    let newDate = format(date, 'MM/dd/yyyy');
-    // let stringDate = newDate.toLocaleString();
-    // console.log('date', stringDate);
-    // this.setState({
-    //   startDate: newDate,
-    // });
-    this.props.startCallback(newDate)
+    this.setState({
+      startDate: date
+    })
+    this.props.startCallback(date)
   };
   handleEndDateChange = date => {
-    let newDate = format(date, 'MM/dd/yyyy');
-    // this.setState({
-    //   endDate: date
-    // });
-    this.props.endCallback(newDate)
+    // let newDate = format(date, 'MM/dd/yyyy');
+    this.setState({
+      endDate: date
+    });
+    this.props.endCallback(date)
   };
   handleChange(event) {
     this.setState({value: event.target.value});

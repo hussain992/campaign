@@ -85,19 +85,40 @@ class CampaignTable extends React.Component {
 		})
 		console.log("sorted start date",tempArr);
 	}
-	sortRange() {
 
+	static getDerivedStateFromProps(props, state) {
+		if(props.name.length > 0) {
+			console.log("enter in new method");
+			let data = state.dataArr;
+			let filterName =[];
+			data.map(data => {
+				console.log("hello");
+				if(data.name == props.name) {
+					console.log("success");
+					filterName.push(data)
+				}
+			})
+			if(filterName.length > 0){
+				return{
+					dataArr: filterName,
+				}
+			}
+			else{
+				alert("Sorry No Campaign found");
+			}
+		}
+		return null;
 	}
-
 	render() {
 		const Arr = this.props.data;
 		console.log(this.state.dataArr);
 		console.log("data in campaign table:", this.props.startDate, this.props.endDate);
-
+		console.log("search name", this.props.name);
+		
 		return(
 			<Fragment>
 				<div onClick={this.sortName}>sort</div>
-				<div onClick={this.sortStartDate}>startdate</div>
+				<div onClick={this.sortStartDate}>start date</div>
 				<TableHeader>
 					<Title> Name </Title>
 					<Title> Start Date </Title>

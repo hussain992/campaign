@@ -32,6 +32,7 @@ class Home extends React.Component {
 		this.state={
 			startDateKey:'',
 			endDateKey:'',
+			searchTerm:'',
 		}
 	};
 	callbackStartDateFunction = (childData) => {
@@ -44,6 +45,11 @@ class Home extends React.Component {
 			endDateKey: childData,
 		}, () => console.log("got end date from prop:", this.state.endDateKey ))
 	}
+	callbackEnteredName = (name) => {
+		this.setState({
+			searchTerm: name,
+		})
+	}
 	render() {
 		// console.log
 		return(
@@ -51,11 +57,13 @@ class Home extends React.Component {
 				<DateContainer 
 					startCallback = {this.callbackStartDateFunction} 
 					endCallback = {this.callbackEndDateFunction}
+					searchCallback = {this.callbackEnteredName}
 					data={Arr} 
 				/>
 				<CampaignTable 
 					endDate={this.state.endDateKey} 
 					startDate={ this.state.startDateKey} 
+					name={this.state.searchTerm}
 					data={Arr} 
 				/>
 			</MainLayout>

@@ -41,8 +41,8 @@ class DateContainer extends React.Component {
   constructor(props){
     super(props);
     this.state={
-      startDate: null,
-      endDate: null,
+      startDate: new Date(),
+      endDate: new Date(),
       value: '',
     }
     this.handleChange = this.handleChange.bind(this);
@@ -74,8 +74,10 @@ class DateContainer extends React.Component {
   }
 
   handleSubmit(event) {
-    alert('A name was submitted: ' + this.state.value);
+    // alert('A name was submitted: ' + this.state.value);
     event.preventDefault();
+    this.props.searchCallback(this.state.value)
+    // console.log("entered text:", this.state.);
   }
   render() {
     return(
@@ -86,7 +88,7 @@ class DateContainer extends React.Component {
               selected={this.state.startDate}
               onChange={this.handleStartDateChange}
               popperPlacement="top"
-              dateFormat="yyyy/MM/dd"
+              dateFormat="MM/dd/yyyy"
               // placeholderText="Select Start Date"
             />
             <Note> Home: Move to the previous year.</Note>
@@ -98,12 +100,17 @@ class DateContainer extends React.Component {
               onChange={this.handleEndDateChange}
               popperPlacement="top"
             />
-             <Note> Home: Move to the previous year.</Note>
+            <Note> Home: Move to the previous year.</Note>
             <Note> End: Move to the next year. </Note>
           </div>
         </DateInputRow>
         <form onSubmit={this.handleSubmit}>
-          <SearchInput type="text" value={this.state.value} onChange={this.handleChange} />
+          <SearchInput 
+            type="text"
+            placeholder="Search Campaign" 
+            value={this.state.value} 
+            onChange={this.handleChange} 
+          />
         </form>
       </MainRow>
     )

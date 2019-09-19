@@ -2,11 +2,15 @@ import React from 'react';
 import styled from 'styled-components';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { format, parse, parseISO, getTime } from 'date-fns';
+// import { format, parse, parseISO, getTime } from 'date-fns';
 
 const DateInputRow = styled.div`
   display: flex;
   /* margin-top: 50px; */
+  /* margin: auto; */
+  @media only screen and (max-width: 768px) {
+		flex-direction: column;		
+	}
 `;
 
 const StyledDatePicker = styled(DatePicker)`
@@ -14,6 +18,7 @@ const StyledDatePicker = styled(DatePicker)`
   border: 1px solid #444;
   padding: 3px 6px;
   margin-bottom: 10px;
+  margin-top: 5px;
 `;
 
 const MainRow = styled.div`
@@ -21,7 +26,9 @@ const MainRow = styled.div`
   margin: 10px auto;
   justify-content: space-between;
   display: flex;
-
+  @media only screen and (max-width: 768px) {
+		flex-direction: column;		
+	}
 `;
 
 const SearchInput = styled.input`
@@ -29,6 +36,7 @@ const SearchInput = styled.input`
   border: 1px solid #444;
   height: 20px;
   padding-left: 10px;
+  margin-top: 5px;
 `;
 
 const Note = styled.div`
@@ -81,6 +89,7 @@ class DateContainer extends React.Component {
       <MainRow>
         <DateInputRow>
           <div>
+            <Note> Start Date </Note>
             <StyledDatePicker
               selected={this.state.startDate}
               onChange={this.handleStartDateChange}
@@ -92,6 +101,7 @@ class DateContainer extends React.Component {
             <Note> End: Move to the next year. </Note>
           </div>
           <div>
+            <Note> End Date </Note>
             <StyledDatePicker
               selected={this.state.endDate}
               onChange={this.handleEndDateChange}
@@ -102,6 +112,7 @@ class DateContainer extends React.Component {
           </div>
         </DateInputRow>
         <form onSubmit={this.handleSubmit}>
+          <Note> Enter Name </Note>
           <SearchInput 
             type="text"
             placeholder="Search Campaign" 

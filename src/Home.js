@@ -4,7 +4,7 @@ import DateContainer from './component/DateContainer';
 import CampaignTable from './component/CampaignTable';
 import { format, parse, parseISO, getTime } from 'date-fns';
 
-const Arr = [{"id":1,"name":"Divavu","startDate":"9/19/2017","endDate":"3/9/2018","B udget":88377},
+const Arr = [{"id":1,"name":"Divavu","startDate":"9/19/2017","endDate":"3/9/2018","Budget":88377},
 {"id":2,"name":"Jaxspan","startDate":"11/21/2017","endDate":"2/21/2018", "Budget":608715},
 {"id":3,"name":"Miboo","startDate":"11/1/2017","endDate":"6/20/2017","Bu dget":239507},
 {"id":4,"name":"Trilith","startDate":"8/25/2017","endDate":"11/30/2017", "Budget":179838},
@@ -16,6 +16,8 @@ const Arr = [{"id":1,"name":"Divavu","startDate":"9/19/2017","endDate":"3/9/2018
 {"id":10,"name":"Realbridge","startDate":"3/5/2018","endDate":"10/2/2020 ","Budget":505602}
 ];
 
+
+
 const MainLayout = styled.div`
   border: 2px solid #91aeff;
 	width: 50%;
@@ -24,7 +26,9 @@ const MainLayout = styled.div`
 	padding: 30px;
 	border-radius: 4px;
 	flex-direction: column;
-	/* min-height: 300px; */
+	@media only screen and (max-width: 768px) {
+		width: 90%;
+		padding: 15px;	}
 `;
 
 class Home extends React.Component {
@@ -36,9 +40,18 @@ class Home extends React.Component {
 			searchTerm:'',
 			startDateRange: '',
 			endDateRange: '',
+			consoleData: [],
 
 		}
 	};
+	componentDidMount() {
+		window.AddCampaigns = data => {
+			console.log('data====', data);
+			this.setState({
+				consoleData: data,
+			})
+		}
+	}
 	callbackStartDateFunction = (childData) => {
 		let startDateFormated = format(childData, 'MM/dd/yyyy');
 		let startMs = getTime(childData);
@@ -65,14 +78,16 @@ class Home extends React.Component {
 	}
 	render() {
 		// console.log("integer date:", this.state.startDateRange, this.state.endDateRange);
-		
+		console.log('state=====', this.state);
+		const { consoleData } = this.state;
+
 		return(
 			<MainLayout>
 				<DateContainer 
 					startCallback = {this.callbackStartDateFunction} 
 					endCallback = {this.callbackEndDateFunction}
 					searchCallback = {this.callbackEnteredName}
-					data={Arr} 
+					data={consoleData} 
 				/>
 				<CampaignTable 
 					endDate={this.state.endDateKey} 
@@ -80,7 +95,7 @@ class Home extends React.Component {
 					name={this.state.searchTerm}
 					startRange={this.state.startDateRange}
 					endRange={this.state.endDateRange}
-					data={Arr} 
+					data={consoleData} 
 				/>
 			</MainLayout>
 		)

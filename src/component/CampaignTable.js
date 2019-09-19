@@ -1,7 +1,7 @@
 import React, {Fragment} from 'react';
 import styled from 'styled-components';
 import sortBy from 'lodash.sortby';
-import { format, parse, parseISO, getTime } from 'date-fns';
+import { parse, parseISO, getTime } from 'date-fns';
 
 const TableHeader = styled.div`
 	display: flex;
@@ -65,6 +65,22 @@ const Dot = styled.div`
 const StatusText = styled.div`
 	color: #444;
 `;
+const ButtonRow = styled.div`
+	display: flex;
+	flex-direction: row;
+	width: 95%;
+	margin: 0 auto;
+`;
+const SortButton = styled.div`
+	border: 1px solid #91aeff;
+	padding: 5px 10px;
+	border-radius: 4px;
+	align-self: flex-start;
+	display: flex;
+	margin-right: 15px;
+	text-transform: capitalize;
+	cursor: pointer;
+`;
 class CampaignTable extends React.Component {
 	constructor(props) {
 		super(props);
@@ -75,8 +91,17 @@ class CampaignTable extends React.Component {
 		}
 		this.sortName = this.sortName.bind(this);
 		this.sortStartDate = this.sortStartDate.bind(this);
-
 	}
+
+	// componentWillReceiveProps(nextProps) {
+	// 	console.log("next prop", nextProps);
+	// 	// if (JSON.stringify(nextProps.data) !== JSON.stringify(this.props.data)) {
+	// 		this.setState({
+	// 			dataArr: nextProps.data
+	// 		})
+	// 	// }
+	// }
+
 	sortName() {
 		// console.log("click sort");
 		this.setState(prevState => {
@@ -101,6 +126,11 @@ class CampaignTable extends React.Component {
 	}
 
 	static getDerivedStateFromProps(props, state) {
+		if(props.data.length > 0) {
+			return{
+				dataArr: props.data,
+			}
+		}
 		if(props.name.length > 0) {
 			// console.log("enter in new method");
 			let data = state.dataArr;
@@ -151,15 +181,18 @@ class CampaignTable extends React.Component {
 
 	}
 	render() {
-		const Arr = this.props.data;
-		console.log(this.state.dataArr);
-		console.log("data in campaign table:", this.props.startDate, this.props.endDate);
-		console.log("search name", this.props.name);
-		console.log("range",this.props.startRange)
+		// const Arr = this.props.data;
+		// console.log('data===Array====', this.state.dataArr);
+		// console.log("data in campaign table:", this.props.startDate, this.props.endDate);
+		// console.log("search name", this.props);
+		// console.log("range",this.props.startRange)
+		console.log("length:", this.state.dataArr.length);
 		return(
 			<Fragment>
-				<div onClick={this.sortName}>sort by name</div>
-				<div onClick={this.sortStartDate}>sort by start date</div>
+				<ButtonRow>
+					<SortButton onClick={this.sortName}>Sort by name</SortButton>
+					<SortButton onClick={this.sortStartDate}>Sort by start date</SortButton>
+				</ButtonRow>
 				<TableHeader>
 					<Title> Name </Title>
 					<Title> Start Date </Title>
@@ -175,18 +208,26 @@ class CampaignTable extends React.Component {
 							console.log("false");
 						}
 						return(
-							<Description key={data.id}>
-								<Data>{data.name}</Data>
-								<Data>{data.startDate}</Data>
-								<Data>{data.endDate}</Data>
-								<Data>
-									<StatusRow>
-										<Dot style={{backgroundColor : currentDate < endDate ? "#14a214" : "#9e1616"}}/>
-										<StatusText>{currentDate < endDate ? "active" : "Inactive" }</StatusText>
-									</StatusRow>
-								</Data>
-								<Data>{data.Budget}</Data>
-							</Description>
+							<Fragment>
+								{
+									this.state.dataArr.length > 0 ? 
+										<Description key={data.id}>
+											<Data>{data.name}</Data>
+											<Data>{data.startDate}</Data>
+											<Data>{data.endDate}</Data>
+											<Data>
+												<StatusRow>
+													<Dot style={{backgroundColor : currentDate < endDate ? "#14a214" : "#9e1616"}}/>
+													<StatusText>{currentDate < endDate ? "active" : "Inactive" }</StatusText>
+												</StatusRow>
+											</Data>
+											<Data>{data.Budget}</Data>
+										</Description>
+									: 
+									<div> hello </div>
+								}
+							
+							</Fragment>
 						)
 					})
 				}

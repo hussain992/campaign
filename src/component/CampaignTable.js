@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from 'react';
 import styled from 'styled-components';
 import sortBy from 'lodash.sortby';
 import { parse, parseISO, getTime } from 'date-fns';
@@ -85,30 +85,31 @@ class CampaignTable extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-				dataArr : this.props.data,
-				SortData: [],
-				status: '',
+			dataArr: this.props.data,
+			SortData: [],
+			status: '',
+			sortName: false,
+			sortDate: false,
 		}
-		this.sortName = this.sortName.bind(this);
+		this.sortNameClick = this.sortNameClick.bind(this);
 		this.sortStartDate = this.sortStartDate.bind(this);
 	}
 
-	// componentWillReceiveProps(nextProps) {
-	// 	console.log("next prop", nextProps);
-	// 	// if (JSON.stringify(nextProps.data) !== JSON.stringify(this.props.data)) {
-	// 		this.setState({
-	// 			dataArr: nextProps.data
-	// 		})
-	// 	// }
-	// }
 
-	sortName() {
+
+	sortNameClick() {
 		// console.log("click sort");
-		this.setState(prevState => {
-			return(
-				{dataArr: sortBy(prevState.dataArr, ['name'])}
-			)
-		},() => console.log('sorted data', this.state.dataArr))
+		let unsortedName = []
+		unsortedName = this.state.dataArr
+		let sortedName = sortBy(unsortedName, ['name'])
+		// console.log("sorted name:", sortedName);
+		this.setState({
+			dataArr: sortedName,
+			sortName: true,
+			sortDate: false,
+		}, 
+		// console.log("sorted name:", sortedName)
+		)
 	}
 
 	sortStartDate() {
@@ -121,55 +122,59 @@ class CampaignTable extends React.Component {
 		});
 		this.setState({
 			dataArr: tempArr,
+			sortDate: true,
+			sortName: false,
 		})
 		// console.log("sorted start date",tempArr);
 	}
 
 	static getDerivedStateFromProps(props, state) {
-		if(props.data.length > 0) {
-			return{
+		if (props.data.length > 0 && props.name.length <= 0 && props.startRange <= 0 && state.sortName === false) {
+			// console.log("entered here", state.dataArr);
+			return {
 				dataArr: props.data,
 			}
 		}
-		if(props.name.length > 0) {
-			// console.log("enter in new method");
+		if (props.name.length > 0) {
 			let data = state.dataArr;
-			let filterName =[];
+			// console.log("enter in search method", data);
+			let filterName = [];
 			data.map(data => {
 				// console.log("hello");
-				if(data.name == props.name) {
+				if (data.name === props.name) {
 					// console.log("success");
 					filterName.push(data)
 				}
 			})
-			if(filterName.length > 0){
-				return{
+			if (filterName.length > 0) {
+				return {
 					dataArr: filterName,
 				}
 			}
-			else{
+			else {
 				alert("Sorry No Campaign found");
 			}
 		}
-		if(props.startRange > 0){
-			if(props.endRange > 0) {
-				if(props.endRange < props.startRange){
+		if (props.startRange > 0) {
+
+			if (props.endRange > 0) {
+				if (props.endRange < props.startRange) {
 					alert('End Date cannot be before Start Date');
 					return null;
 				}
 				let data = state.dataArr;
-				let DateRange =[];
+				let DateRange = [];
 				data.map(data => {
-					let startDate = getTime(parse(data.startDate,'MM/dd/yyyy', new Date()))
-					let endDate = getTime(parse(data.endDate,'MM/dd/yyyy', new Date()))
-					console.log("hello")
-					if( startDate > props.startRange && endDate < props.endRange) {
-						console.log('within range');
+					let startDate = getTime(parse(data.startDate, 'MM/dd/yyyy', new Date()))
+					let endDate = getTime(parse(data.endDate, 'MM/dd/yyyy', new Date()))
+					// console.log("hello")
+					if (startDate > props.startRange && endDate < props.endRange) {
+						// console.log('within range');
 						DateRange.push(data)
 					}
 				})
-				if(DateRange.length > 0){
-					return{
+				if (DateRange.length > 0) {
+					return {
 						dataArr: DateRange,
 					}
 				}
@@ -186,12 +191,14 @@ class CampaignTable extends React.Component {
 		// console.log("data in campaign table:", this.props.startDate, this.props.endDate);
 		// console.log("search name", this.props);
 		// console.log("range",this.props.startRange)
-		console.log("length:", this.state.dataArr.length);
-		return(
+		// console.log("render called", this.state.dataArr);
+		return (
 			<Fragment>
 				<ButtonRow>
-					<SortButton onClick={this.sortName}>Sort by name</SortButton>
-					<SortButton onClick={this.sortStartDate}>Sort by start date</SortButton>
+					<SortButton style={{ backgroundColor: this.state.sortName ? "#3471eb" : '#fff', color: this.state.sortName ? '#fff' : "#3471eb" }} 
+						onClick={this.sortNameClick}>Sort by name</SortButton>
+					<SortButton style={{ backgroundColor: this.state.sortDate ? "#3471eb" : '#fff', color: this.state.sortDate ? '#fff' : "#3471eb" }}
+						onClick={this.sortStartDate}>Sort by start date</SortButton>
 				</ButtonRow>
 				<TableHeader>
 					<Title> Name </Title>
@@ -201,35 +208,36 @@ class CampaignTable extends React.Component {
 					<Title> Budget </Title>
 				</TableHeader>
 				{
-					this.state.dataArr.map(data => {
-						let currentDate = getTime(new Date());
-						let endDate = getTime(parse(data.endDate,'MM/dd/yyyy', new Date()))
-						if(currentDate < endDate) {
-							console.log("false");
-						}
-						return(
-							<Fragment>
-								{
-									this.state.dataArr.length > 0 ? 
+					this.state.dataArr.length === 0 ?
+						<Description>
+							<Data> No data Available </Data>
+						</Description>
+						:
+						<Fragment>
+							{
+								this.state.dataArr.map(data => {
+									let currentDate = getTime(new Date());
+									let endDate = getTime(parse(data.endDate, 'MM/dd/yyyy', new Date()))
+									if (currentDate < endDate) {
+										// console.log("false");
+									}
+									return (
 										<Description key={data.id}>
 											<Data>{data.name}</Data>
 											<Data>{data.startDate}</Data>
 											<Data>{data.endDate}</Data>
 											<Data>
 												<StatusRow>
-													<Dot style={{backgroundColor : currentDate < endDate ? "#14a214" : "#9e1616"}}/>
-													<StatusText>{currentDate < endDate ? "active" : "Inactive" }</StatusText>
+													<Dot style={{ backgroundColor: currentDate < endDate ? "#14a214" : "#9e1616" }} />
+													<StatusText>{currentDate < endDate ? "active" : "Inactive"}</StatusText>
 												</StatusRow>
 											</Data>
 											<Data>{data.Budget}</Data>
 										</Description>
-									: 
-									<div> hello </div>
-								}
-							
-							</Fragment>
-						)
-					})
+									)
+								})
+							}
+						</Fragment>
 				}
 			</Fragment>
 		)

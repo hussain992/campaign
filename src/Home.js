@@ -2,13 +2,13 @@ import React from 'react';
 import styled from 'styled-components';
 import DateContainer from './component/DateContainer';
 import CampaignTable from './component/CampaignTable';
-import { format, parse, parseISO, getTime } from 'date-fns';
+import { format, getTime } from 'date-fns';
 
 const Arr = [{"id":1,"name":"Divavu","startDate":"9/19/2017","endDate":"3/9/2018","Budget":88377},
 {"id":2,"name":"Jaxspan","startDate":"11/21/2017","endDate":"2/21/2018", "Budget":608715},
-{"id":3,"name":"Miboo","startDate":"11/1/2017","endDate":"6/20/2017","Bu dget":239507},
+{"id":3,"name":"Miboo","startDate":"11/1/2017","endDate":"6/20/2017","Budget":239507},
 {"id":4,"name":"Trilith","startDate":"8/25/2017","endDate":"11/30/2017", "Budget":179838},
-{"id":5,"name":"Layo","startDate":"11/28/2017","endDate":"3/10/2018","Bu dget":837850},
+{"id":5,"name":"Layo","startDate":"11/28/2017","endDate":"3/10/2018","Budget":837850},
 {"id":6,"name":"Photojam","startDate":"6/23/2017","endDate":"7/25/2017", "Budget":858131},
 {"id":7,"name":"Blogtag","startDate":"6/27/2017","endDate":"1/15/2018"," Budget":109078},
 {"id":8,"name":"Rhyzio","startDate":"10/13/2017","endDate":"1/25/2018"," Budget":272552},
@@ -45,10 +45,10 @@ class Home extends React.Component {
 		}
 	};
 	componentDidMount() {
-		window.AddCampaigns = data => {
-			console.log('data====', data);
+		window.AddCampaigns = (data,data1) => {
+			// console.log('data====', data);
 			this.setState({
-				consoleData: data,
+				consoleData: this.state.consoleData.concat(data),
 			})
 		}
 	}
@@ -58,7 +58,9 @@ class Home extends React.Component {
 		this.setState({
 			startDateKey: startDateFormated,
 			startDateRange: startMs,
-		}, () => console.log("got date from prop:", this.state.startDateKey ))
+		}
+		// , () => console.log("got date from prop:", this.state.startDateKey )
+		)
 
 		// console.log('parent int start date:', startMs);
 	}
@@ -68,7 +70,10 @@ class Home extends React.Component {
 		this.setState({
 			endDateKey: endDateFormated,
 			endDateRange: endMs,
-		}, () => console.log("got end date from prop:", this.state.endDateKey ))
+		}
+		// , () => 
+		// console.log("got end date from prop:", this.state.endDateKey )
+		)
 		// console.log('')
 	}
 	callbackEnteredName = (name) => {
@@ -78,7 +83,7 @@ class Home extends React.Component {
 	}
 	render() {
 		// console.log("integer date:", this.state.startDateRange, this.state.endDateRange);
-		console.log('state=====', this.state);
+		// console.log('state=====', this.state);
 		const { consoleData } = this.state;
 
 		return(
